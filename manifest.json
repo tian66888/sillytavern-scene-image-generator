@@ -1,0 +1,15 @@
+{
+    "display_name": "Scene Image Generator",
+    "loading_order": 20,
+    "requires": [],
+    "optional": [],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "yantianqi",
+    "version": "0.1.0",
+    "homePage": "https://github.com/yantianqi/sillytavern-scene-image-generator",
+    "auto_update": true,
+    "hooks": {
+        "activate": "init"
+    }
+}

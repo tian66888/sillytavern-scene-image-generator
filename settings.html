@@ -1,0 +1,145 @@
+<div id="scene_image_generator_container" class="scene-image-generator extension_container">
+    <div class="inline-drawer">
+        <div class="inline-drawer-toggle inline-drawer-header">
+            <b>Scene Image Generator</b>
+            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+        </div>
+        <div class="inline-drawer-content">
+            <div class="sig-grid">
+                <label>
+                    Active image profile
+                    <select id="sig_profile_select"></select>
+                </label>
+                <label>
+                    Recent turns
+                    <input id="sig_context_turns" type="number" min="1" max="20" step="1">
+                </label>
+            </div>
+
+            <div class="sig-actions">
+                <button id="sig_generate" class="menu_button" type="button">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    Generate from current scene
+                </button>
+                <button id="sig_save_general" class="menu_button" type="button">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save settings
+                </button>
+            </div>
+
+            <label>
+                Scene-to-image preset prompt
+                <textarea id="sig_preset_prompt" rows="8"></textarea>
+            </label>
+
+            <h4>Prompt rewrite model</h4>
+            <div class="sig-grid">
+                <label>
+                    Mode
+                    <select id="sig_rewrite_mode">
+                        <option value="current">Use current SillyTavern model</option>
+                        <option value="custom">Use custom OpenAI-compatible chat API</option>
+                    </select>
+                </label>
+                <label>
+                    Temperature
+                    <input id="sig_rewrite_temperature" type="number" min="0" max="2" step="0.1">
+                </label>
+            </div>
+            <div class="sig-grid">
+                <label>
+                    Custom chat API base URL
+                    <input id="sig_rewrite_api_url" type="text" placeholder="https://api.example.com/v1">
+                </label>
+                <label>
+                    Custom chat model
+                    <input id="sig_rewrite_model" type="text" placeholder="gpt-4o-mini">
+                </label>
+            </div>
+            <label>
+                Custom chat API key
+                <input id="sig_rewrite_api_key" type="password" autocomplete="off">
+            </label>
+
+            <h4>Image API profiles</h4>
+            <div class="sig-actions">
+                <button id="sig_add_profile" class="menu_button" type="button">
+                    <i class="fa-solid fa-plus"></i>
+                    Add
+                </button>
+                <button id="sig_save_profile" class="menu_button" type="button">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save profile
+                </button>
+                <button id="sig_delete_profile" class="menu_button" type="button">
+                    <i class="fa-solid fa-trash"></i>
+                    Delete
+                </button>
+            </div>
+
+            <div class="sig-grid">
+                <label>
+                    Profile name
+                    <input id="sig_profile_name" type="text">
+                </label>
+                <label>
+                    Provider
+                    <select id="sig_provider">
+                        <option value="openai-compatible">OpenAI-compatible image API</option>
+                    </select>
+                </label>
+            </div>
+            <div class="sig-grid">
+                <label>
+                    Image API base URL
+                    <input id="sig_image_api_url" type="text" placeholder="https://api.example.com/v1">
+                </label>
+                <label>
+                    Image model
+                    <input id="sig_image_model" type="text" placeholder="gpt-image-1">
+                </label>
+            </div>
+            <div class="sig-grid">
+                <label>
+                    Size
+                    <input id="sig_image_size" type="text" placeholder="1024x1024">
+                </label>
+                <label>
+                    Response format
+                    <select id="sig_response_format">
+                        <option value="b64_json">b64_json</option>
+                        <option value="url">url</option>
+                    </select>
+                </label>
+            </div>
+            <label>
+                Image API key
+                <input id="sig_image_api_key" type="password" autocomplete="off">
+            </label>
+            <label>
+                Extra image request params JSON
+                <textarea id="sig_extra_params" rows="4" spellcheck="false"></textarea>
+            </label>
+
+            <h4>Last result</h4>
+            <label>
+                Generated prompt
+                <textarea id="sig_last_prompt" rows="5" readonly></textarea>
+            </label>
+            <div id="sig_result" class="sig-result displayNone">
+                <img id="sig_result_image" alt="Generated scene">
+                <div class="sig-actions">
+                    <button id="sig_copy_prompt" class="menu_button" type="button">
+                        <i class="fa-solid fa-copy"></i>
+                        Copy prompt
+                    </button>
+                    <button id="sig_open_image" class="menu_button" type="button">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        Open image
+                    </button>
+                </div>
+            </div>
+            <div id="sig_status" class="sig-status" data-type="info"></div>
+        </div>
+    </div>
+</div>
