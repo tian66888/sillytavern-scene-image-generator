@@ -1,4 +1,4 @@
-import { chat, name1, name2 } from '../../../../script.js';
+import { chat, name1, name2 } from '../../../../../script.js';
 
 function messageToText(message) {
     if (!message || typeof message.mes !== 'string') {

@@ -1,4 +1,4 @@
-import { generateQuietPrompt } from '../../../../script.js';
+import { generateQuietPrompt } from '../../../../../script.js';
 
 function buildRewritePrompt(sceneText, presetPrompt) {
     return `${presetPrompt.trim()}

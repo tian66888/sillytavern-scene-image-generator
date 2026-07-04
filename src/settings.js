@@ -1,4 +1,4 @@
-import { saveSettingsDebounced } from '../../../../script.js';
+import { saveSettingsDebounced } from '../../../../../script.js';
 import { extension_settings } from '../../../../extensions.js';
 
 export const MODULE_NAME = 'sceneImageGenerator';
