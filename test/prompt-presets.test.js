@@ -101,7 +101,13 @@ test('uses the comic page author prompt preset', () => {
     assert.match(prompt, /一张不规则分镜漫画页/);
     assert.match(prompt, /3–4 个不规则分镜/);
     assert.match(prompt, /保持画面克制，不要色情化/);
+    assert.match(prompt, /少量清晰可读的中文漫画文字/);
+    assert.match(prompt, /共 2–4 处即可/);
+    assert.match(prompt, /每处不超过 8–12 个汉字/);
+    assert.match(prompt, /不遮挡角色面部、手势和关键动作/);
+    assert.match(prompt, /不要乱码/);
     assert.match(prompt, /第一格：/);
+    assert.match(prompt, /本格文字：/);
     assert.match(prompt, /第二格：/);
     assert.match(prompt, /第三格：/);
     assert.match(prompt, /第四格：/);
