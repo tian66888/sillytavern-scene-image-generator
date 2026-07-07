@@ -179,19 +179,6 @@
     display: none !important;
 }
 
-.sig-result {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.sig-result img {
-    max-width: 100%;
-    max-height: 480px;
-    object-fit: contain;
-    border: 1px solid var(--SmartThemeBorderColor);
-    border-radius: 6px;
-}
-
 .sig-status {
     min-height: 1.3em;
     margin-top: 0.5rem;

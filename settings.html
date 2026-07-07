@@ -18,10 +18,6 @@
                     <i class="fa-solid fa-plug"></i>
                     生图 API
                 </button>
-                <button class="sig-tab" type="button" data-tab="result" role="tab" aria-selected="false">
-                    <i class="fa-solid fa-image"></i>
-                    结果
-                </button>
                 <button class="sig-tab" type="button" data-tab="gallery" role="tab" aria-selected="false">
                     <i class="fa-solid fa-images"></i>
                     图库
@@ -242,26 +238,6 @@
                     </section>
                 </div>
                 <textarea id="sig_extra_params" class="displayNone" spellcheck="false" aria-hidden="true"></textarea>
-            </section>
-
-            <section class="sig-tab-panel" data-tab-panel="result" role="tabpanel">
-                <label>
-                    生成提示词
-                    <textarea id="sig_last_prompt" rows="4" readonly></textarea>
-                </label>
-                <div id="sig_result" class="sig-result displayNone">
-                    <img id="sig_result_image" alt="生成的剧情图片">
-                </div>
-                <div class="sig-actions">
-                    <button id="sig_copy_prompt" class="menu_button sig-button" type="button">
-                        <i class="fa-solid fa-copy"></i>
-                        复制
-                    </button>
-                    <button id="sig_open_image" class="menu_button sig-button" type="button">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        打开
-                    </button>
-                </div>
             </section>
 
             <section class="sig-tab-panel" data-tab-panel="gallery" role="tabpanel">

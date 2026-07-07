@@ -16,6 +16,18 @@ test('provides a real select control for choosing fetched NovelAI models', () =>
     assert.match(html, /<select id="sig_image_model_select"/);
 });
 
+test('does not duplicate generated prompt and image in a result tab', () => {
+    const html = readFileSync(new URL('../settings.html', import.meta.url), 'utf8');
+
+    assert.doesNotMatch(html, /data-tab="result"/);
+    assert.doesNotMatch(html, /data-tab-panel="result"/);
+    assert.doesNotMatch(html, /id="sig_last_prompt"/);
+    assert.doesNotMatch(html, /id="sig_result"/);
+    assert.doesNotMatch(html, /id="sig_result_image"/);
+    assert.doesNotMatch(html, /id="sig_copy_prompt"/);
+    assert.doesNotMatch(html, /id="sig_open_image"/);
+});
+
 test('binds NovelAI positive and negative prompts to style presets instead of params', () => {
     const html = readFileSync(new URL('../settings.html', import.meta.url), 'utf8');
 

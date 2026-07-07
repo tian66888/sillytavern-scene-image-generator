@@ -429,19 +429,11 @@ function renderGeneralSettings() {
     $('#sig_rewrite_api_key').val(settings.rewrite.apiKey);
     $('#sig_rewrite_model').val(settings.rewrite.model);
     $('#sig_rewrite_temperature').val(settings.rewrite.temperature);
-    $('#sig_last_prompt').val(settings.lastPrompt || '');
     lastQuickPrompt = settings.lastPrompt || '';
     lastQuickBasePrompt = settings.lastBasePrompt || settings.lastPrompt || '';
-    if (settings.lastImageUrl) {
-        $('#sig_result_image').attr('src', settings.lastImageUrl);
-        $('#sig_result').removeClass('displayNone');
-    }
 }
 
-function renderResult(prompt, imageUrl, basePrompt = prompt) {
-    $('#sig_last_prompt').val(prompt);
-    $('#sig_result_image').attr('src', imageUrl);
-    $('#sig_result').removeClass('displayNone');
+function updateLastPromptState(prompt, basePrompt = prompt) {
     lastQuickPrompt = prompt;
     lastQuickBasePrompt = basePrompt || prompt;
     setQuickPromptButtonVisible(quickButton, Boolean(prompt));
@@ -636,7 +628,7 @@ async function runSceneGeneration({ reusePrompt = false } = {}) {
         settings.lastImageUrl = imageUrl;
         const galleryResult = addGalleryItem(settings, { imageUrl, prompt, sceneText, profile: generationProfile });
         saveSettings();
-        renderResult(prompt, imageUrl, basePrompt);
+        updateLastPromptState(prompt, basePrompt);
         renderGallery();
         await appendGeneratedImageToLatestMessage(imageUrl);
         if (!galleryResult.retained) {
@@ -771,14 +763,6 @@ function bindEvents() {
     $('#sig_save_general').on('click', () => {
         saveGeneralSettings();
         setStatus('设置已保存。', 'success');
-    });
-    $('#sig_copy_prompt').on('click', async () => {
-        await navigator.clipboard.writeText($('#sig_last_prompt').val()?.toString() || '');
-        setStatus('提示词已复制。', 'success');
-    });
-    $('#sig_open_image').on('click', () => {
-        const src = $('#sig_result_image').attr('src');
-        if (src) window.open(src, '_blank', 'noopener,noreferrer');
     });
     $('#sig_refresh_gallery').on('click', () => {
         const settings = getSettings();
