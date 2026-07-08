@@ -14,6 +14,7 @@ import {
     normalizeNovelAIStylePresets,
 } from './novelai-style-presets.js';
 import { getProfileNameForProvider } from './profile-names.js';
+import { DEFAULT_CONTEXT_TURNS, DEFAULT_MAX_SCENE_CHARS, normalizeContextTurns, normalizeMaxSceneChars } from './context-utils.js';
 
 export const MODULE_NAME = 'sceneImageGenerator';
 
@@ -27,7 +28,8 @@ export { DEFAULT_REWRITE_PROMPT };
 
 export const DEFAULT_SETTINGS = Object.freeze({
     selectedProfileId: '',
-    contextTurns: 4,
+    contextTurns: DEFAULT_CONTEXT_TURNS,
+    maxSceneChars: DEFAULT_MAX_SCENE_CHARS,
     imageRetryCount: 0,
     presetPrompt: DEFAULT_REWRITE_PROMPT,
     selectedPromptPresetId: DEFAULT_PROMPT_PRESETS[0].id,
@@ -102,6 +104,8 @@ export function getSettings() {
 
     normalizePromptPresets(settings);
     normalizeNovelAIStylePresets(settings);
+    settings.contextTurns = normalizeContextTurns(settings.contextTurns);
+    settings.maxSceneChars = normalizeMaxSceneChars(settings.maxSceneChars);
 
     if (!settings.selectedProfileId && settings.profiles.length > 0) {
         settings.selectedProfileId = settings.profiles[0].id;

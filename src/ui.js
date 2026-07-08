@@ -2,6 +2,12 @@ import { appendGeneratedImageToLatestMessage } from './chat-message.js';
 import { collectSceneContext, getLastSceneText } from './context.js';
 import { callGenericPopup, POPUP_TYPE } from '../../../../../scripts/popup.js';
 import {
+    DEFAULT_CONTEXT_TURNS,
+    DEFAULT_MAX_SCENE_CHARS,
+    normalizeContextTurns,
+    normalizeMaxSceneChars,
+} from './context-utils.js';
+import {
     addGalleryItem,
     clearGallery,
     GALLERY_MAX_STORAGE_BYTES,
@@ -406,7 +412,8 @@ function saveCurrentProfile({ silent = false, rerender = true } = {}) {
 
 function saveGeneralSettings() {
     const settings = getSettings();
-    settings.contextTurns = Number($('#sig_context_turns').val()) || 4;
+    settings.contextTurns = normalizeContextTurns($('#sig_context_turns').val() || DEFAULT_CONTEXT_TURNS);
+    settings.maxSceneChars = normalizeMaxSceneChars($('#sig_max_scene_chars').val() || DEFAULT_MAX_SCENE_CHARS);
     settings.imageRetryCount = normalizeRetryCount($('#sig_image_retry_count').val());
     saveCurrentPromptPreset({ silent: true });
     saveCurrentNovelAIStylePreset({ silent: true });
@@ -421,6 +428,7 @@ function saveGeneralSettings() {
 function renderGeneralSettings() {
     const settings = getSettings();
     $('#sig_context_turns').val(settings.contextTurns);
+    $('#sig_max_scene_chars').val(settings.maxSceneChars);
     $('#sig_image_retry_count').val(normalizeRetryCount(settings.imageRetryCount));
     renderPromptPresets();
     renderNovelAIStylePresets();
@@ -586,7 +594,8 @@ async function runSceneGeneration({ reusePrompt = false } = {}) {
     saveGeneralSettings();
     saveCurrentProfile();
 
-    const sceneText = collectSceneContext(settings.contextTurns) || getLastSceneText();
+    const sceneText = collectSceneContext(settings.contextTurns, settings.maxSceneChars) || getLastSceneText();
+    console.info('[剧情生图] 当前剧情上下文字数:', sceneText.length);
     setStatus(reusePrompt ? '正在使用上次提示词生成图片...' : '正在将当前剧情改写为生图提示词...', 'info');
 
     try {

@@ -1,12 +1,33 @@
-import { generateQuietPrompt } from '../../../../../script.js';
+import { generateRaw } from '../../../../../script.js';
 
-function buildRewritePrompt(sceneText, presetPrompt) {
+export function buildRewritePrompt(sceneText, presetPrompt) {
     return `${presetPrompt.trim()}
 
 当前剧情：
 ${sceneText.trim()}
 
 生图提示词：`;
+}
+
+export function buildRewriteMessages(sceneText, presetPrompt) {
+    return [
+        {
+            role: 'system',
+            content: `${presetPrompt.trim()}
+
+重要规则：
+你现在不是角色扮演助手，不要续写剧情，不要向用户提问，不要输出开场白或旁白。
+你的唯一任务是把用户提供的【当前剧情】转换成可以直接用于图像生成的提示词。
+只输出最终生图提示词。`,
+        },
+        {
+            role: 'user',
+            content: `当前剧情：
+${sceneText.trim()}
+
+请输出生图提示词：`,
+        },
+    ];
 }
 
 function normalizeTextResponse(data) {
@@ -19,13 +40,12 @@ export async function rewritePrompt(sceneText, settings) {
         throw new Error('当前还没有可用的聊天剧情。');
     }
 
-    const quietPrompt = buildRewritePrompt(sceneText, settings.presetPrompt);
-
     if (settings.rewrite.mode !== 'custom') {
-        const result = await generateQuietPrompt({
-            quietPrompt,
-            responseLength: 300,
+        const result = await generateRaw({
+            prompt: buildRewriteMessages(sceneText, settings.presetPrompt),
+            responseLength: 600,
             trimToSentence: false,
+            trimNames: false,
         });
         return String(result || '').trim();
     }
@@ -43,10 +63,7 @@ export async function rewritePrompt(sceneText, settings) {
         body: JSON.stringify({
             model: settings.rewrite.model,
             temperature: Number(settings.rewrite.temperature) || 0.4,
-            messages: [
-                { role: 'system', content: settings.presetPrompt },
-                { role: 'user', content: sceneText },
-            ],
+            messages: buildRewriteMessages(sceneText, settings.presetPrompt),
         }),
     });
 
