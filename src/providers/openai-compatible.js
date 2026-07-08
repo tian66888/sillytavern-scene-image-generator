@@ -1,3 +1,5 @@
+import { fetchWithSceneImageProxy } from '../server-proxy.js';
+
 function parseExtraParams(profile) {
     if (!profile.extraParams?.trim()) {
         return {};
@@ -84,7 +86,7 @@ export async function fetchOpenAICompatibleModels({ apiUrl, apiKey } = {}) {
 
     let lastErrorMessage = '';
     for (const url of getModelListUrlCandidates(apiUrl)) {
-        const response = await fetch(url, {
+        const response = await fetchWithSceneImageProxy(url, {
             method: 'GET',
             headers,
         });
@@ -113,7 +115,7 @@ export async function generateOpenAICompatibleImage(prompt, profile) {
         throw new Error('请填写生图模型。');
     }
 
-    const response = await fetch(profile.apiUrl.replace(/\/$/, '') + '/images/generations', {
+    const response = await fetchWithSceneImageProxy(profile.apiUrl.replace(/\/$/, '') + '/images/generations', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

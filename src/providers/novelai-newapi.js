@@ -1,3 +1,5 @@
+import { fetchWithSceneImageProxy } from '../server-proxy.js';
+
 const DEFAULT_NEGATIVE_PROMPT = 'lowres, bad anatomy, bad hands, extra fingers, missing fingers, text, watermark, logo, worst quality, bad quality';
 export const NOVELAI_MODEL_PRESETS = Object.freeze([
     'nai-diffusion-4-5-full-1024x1024',
@@ -178,7 +180,7 @@ export async function generateNovelAIImage(prompt, profile) {
         throw new Error('请填写 NovelAI 模型名。');
     }
 
-    const response = await fetch(profile.apiUrl.replace(/\/$/, '') + '/images/generations', {
+    const response = await fetchWithSceneImageProxy(profile.apiUrl.replace(/\/$/, '') + '/images/generations', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${profile.apiKey}`,
@@ -208,7 +210,7 @@ export async function fetchNovelAIModels({ apiUrl, apiKey } = {}) {
 
     let lastErrorMessage = '';
     for (const url of getModelListUrlCandidates(apiUrl)) {
-        const response = await fetch(url, {
+        const response = await fetchWithSceneImageProxy(url, {
             method: 'GET',
             headers,
         });

@@ -2,13 +2,27 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { fetchOpenAICompatibleModels } from '../src/providers/openai-compatible.js';
+import { SCENE_IMAGE_PROXY_ENDPOINT } from '../src/server-proxy.js';
 
 test('fetches OpenAI compatible models from the models endpoint', async () => {
     const previousFetch = globalThis.fetch;
     globalThis.fetch = async (url, options) => {
-        assert.equal(url, 'https://api.example.com/v1/models');
-        assert.equal(options.method, 'GET');
-        assert.equal(options.headers.Authorization, 'Bearer sk-test');
+        if (url === '/csrf-token') {
+            return {
+                ok: true,
+                async json() {
+                    return { token: 'csrf-test' };
+                },
+            };
+        }
+
+        assert.equal(url, SCENE_IMAGE_PROXY_ENDPOINT);
+        assert.equal(options.method, 'POST');
+        assert.equal(options.headers['X-CSRF-Token'], 'csrf-test');
+        const request = JSON.parse(options.body);
+        assert.equal(request.url, 'https://api.example.com/v1/models');
+        assert.equal(request.method, 'GET');
+        assert.equal(request.headers.Authorization, 'Bearer sk-test');
 
         return {
             ok: true,
@@ -40,9 +54,21 @@ test('fetches OpenAI compatible models from the models endpoint', async () => {
 test('falls back to /v1/models for OpenAI compatible root URLs', async () => {
     const previousFetch = globalThis.fetch;
     const requestedUrls = [];
-    globalThis.fetch = async (url) => {
-        requestedUrls.push(url);
-        if (url === 'https://api.example.com/models') {
+    globalThis.fetch = async (url, options) => {
+        if (url === '/csrf-token') {
+            return {
+                ok: true,
+                async json() {
+                    return { token: 'csrf-test' };
+                },
+            };
+        }
+
+        assert.equal(url, SCENE_IMAGE_PROXY_ENDPOINT);
+        assert.equal(options.headers['X-CSRF-Token'], 'csrf-test');
+        const request = JSON.parse(options.body);
+        requestedUrls.push(request.url);
+        if (request.url === 'https://api.example.com/models') {
             return {
                 ok: false,
                 status: 404,

@@ -10,6 +10,7 @@ import {
     normalizeNovelAISteps,
     parseNovelAIParams,
 } from '../src/providers/novelai-newapi.js';
+import { SCENE_IMAGE_PROXY_ENDPOINT } from '../src/server-proxy.js';
 
 test('provides the requested default NovelAI model presets', () => {
     assert.deepEqual(NOVELAI_MODEL_PRESETS, [
@@ -95,10 +96,23 @@ test('rejects invalid NovelAI JSON parameters', () => {
 test('generates a data image URL from NewAPI NovelAI b64 response', async () => {
     const previousFetch = globalThis.fetch;
     globalThis.fetch = async (url, options) => {
-        assert.equal(url, 'https://api.example.com/v1/images/generations');
+        if (url === '/csrf-token') {
+            return {
+                ok: true,
+                async json() {
+                    return { token: 'csrf-test' };
+                },
+            };
+        }
+
+        assert.equal(url, SCENE_IMAGE_PROXY_ENDPOINT);
         assert.equal(options.method, 'POST');
-        assert.equal(options.headers.Authorization, 'Bearer sk-test');
-        assert.equal(JSON.parse(options.body).model, 'nai-v45-full');
+        assert.equal(options.headers['X-CSRF-Token'], 'csrf-test');
+        const request = JSON.parse(options.body);
+        assert.equal(request.url, 'https://api.example.com/v1/images/generations');
+        assert.equal(request.method, 'POST');
+        assert.equal(request.headers.Authorization, 'Bearer sk-test');
+        assert.equal(JSON.parse(request.body).model, 'nai-v45-full');
 
         return {
             ok: true,
@@ -123,13 +137,24 @@ test('generates a data image URL from NewAPI NovelAI b64 response', async () => 
 
 test('uses OpenAI-style NewAPI error messages', async () => {
     const previousFetch = globalThis.fetch;
-    globalThis.fetch = async () => ({
-        ok: false,
-        status: 402,
-        async json() {
-            return { error: { message: '账户余额不足，请充值' } };
-        },
-    });
+    globalThis.fetch = async (url) => {
+        if (url === '/csrf-token') {
+            return {
+                ok: true,
+                async json() {
+                    return { token: 'csrf-test' };
+                },
+            };
+        }
+
+        return {
+            ok: false,
+            status: 402,
+            async json() {
+                return { error: { message: '账户余额不足，请充值' } };
+            },
+        };
+    };
 
     try {
         await assert.rejects(
@@ -148,9 +173,22 @@ test('uses OpenAI-style NewAPI error messages', async () => {
 test('fetches NovelAI models from the NewAPI models endpoint', async () => {
     const previousFetch = globalThis.fetch;
     globalThis.fetch = async (url, options) => {
-        assert.equal(url, 'https://api.example.com/v1/models');
-        assert.equal(options.method, 'GET');
-        assert.equal(options.headers.Authorization, 'Bearer sk-test');
+        if (url === '/csrf-token') {
+            return {
+                ok: true,
+                async json() {
+                    return { token: 'csrf-test' };
+                },
+            };
+        }
+
+        assert.equal(url, SCENE_IMAGE_PROXY_ENDPOINT);
+        assert.equal(options.method, 'POST');
+        assert.equal(options.headers['X-CSRF-Token'], 'csrf-test');
+        const request = JSON.parse(options.body);
+        assert.equal(request.url, 'https://api.example.com/v1/models');
+        assert.equal(request.method, 'GET');
+        assert.equal(request.headers.Authorization, 'Bearer sk-test');
 
         return {
             ok: true,
@@ -185,9 +223,21 @@ test('fetches NovelAI models from the NewAPI models endpoint', async () => {
 test('falls back to /v1/models when a root NewAPI URL does not expose /models', async () => {
     const previousFetch = globalThis.fetch;
     const requestedUrls = [];
-    globalThis.fetch = async (url) => {
-        requestedUrls.push(url);
-        if (url === 'https://api.example.com/models') {
+    globalThis.fetch = async (url, options) => {
+        if (url === '/csrf-token') {
+            return {
+                ok: true,
+                async json() {
+                    return { token: 'csrf-test' };
+                },
+            };
+        }
+
+        assert.equal(url, SCENE_IMAGE_PROXY_ENDPOINT);
+        assert.equal(options.headers['X-CSRF-Token'], 'csrf-test');
+        const request = JSON.parse(options.body);
+        requestedUrls.push(request.url);
+        if (request.url === 'https://api.example.com/models') {
             return {
                 ok: false,
                 status: 404,
