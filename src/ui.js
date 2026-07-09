@@ -614,7 +614,13 @@ async function runSceneGeneration({ reusePrompt = false } = {}) {
             rewritePromptFn: rewritePrompt,
             applyNovelAIStylePromptFn: applyNovelAIStylePrompt,
         });
-        setStatus('正在生成图片...', 'info');
+
+        settings.lastPrompt = prompt;
+        settings.lastBasePrompt = basePrompt;
+        saveSettings();
+        updateLastPromptState(prompt, basePrompt);
+
+        setStatus('提示词已保存，正在生成图片...', 'info');
         setQuickButtonProgress(quickButton, 'image');
         const generationProfile = resolveSceneGenerationProfile({
             profile,
@@ -632,12 +638,9 @@ async function runSceneGeneration({ reusePrompt = false } = {}) {
             },
         );
 
-        settings.lastPrompt = prompt;
-        settings.lastBasePrompt = basePrompt;
         settings.lastImageUrl = imageUrl;
         const galleryResult = addGalleryItem(settings, { imageUrl, prompt, sceneText, profile: generationProfile });
         saveSettings();
-        updateLastPromptState(prompt, basePrompt);
         renderGallery();
         await appendGeneratedImageToLatestMessage(imageUrl);
         if (!galleryResult.retained) {
